@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
-import ffmpeg
-#import youtube_dl
+from youtube_dl import YoutubeDL
 import os
 import asyncio
 import nest_asyncio
@@ -9,60 +8,26 @@ nest_asyncio.apply()
 
 client = commands.Bot(command_prefix="!")
 
-playlist = [1,2,2]
+playlist = []
 
-# ver 1 of player: download the file, convert, play
-# functional, but too ineficient
-# @client.command()
-# async def play(ctx, url : str):
-#     song_there = os.path.isfile("song.mp3")    
-#     try:
-#         if song_there:
-#             os.remove("song.mp3")
-#     except PermissionError:
-#         await ctx.send("Wait for it to end pweass")
-#         return
+# def add_to_list(url):
+#     playlist.append(url)
 
-#     voiceChannel = discord.utils.get(ctx.guild.voice_channels, name = 'General')
-#     await voiceChannel.connect()
-#     voice = discord.utils.get(client.voice_clients, guild = ctx.guild)
-
-#     ydl_options = {
-#         'format': 'bestaudio/best',
-#         'postprocessors': [{
-#             'key': 'FFmpegExtractAudio',
-#             'preferredcodec': 'mp3',
-#             'preferredquality': '192',
-#             }],
-#     }
-
-#     with youtube_dl.YoutubeDL(ydl_options) as ydl:
-#         ydl.download([url])
-#     for file in os.listdir("./"):
-#         if file.endswith(".mp3"):
-#             os.rename(file, "song.mp3")
-
-#     voice.play(discord.FFmpegPCMAudio("song.mp3"))
-
-# ver2 of player function
-# would have worked sometime ago, but some of these functions (specially
-# create_ytdl_player) aren't working anymore.
 
 # @client.command()
-# async def play(ctx, url : str):
-#     channel = ctx.message.author.voice.channel
-#     await channel.connect()
-    
-#     guild = ctx.message.guild
-#     voice_client = guild.voice_client
-#     player = await voice_client.create_ytdl_player(url)
-#     player.start()
+# async def p(ctx, url):
+#     if not url.startswith('https://www.youtube.com'):
+#         await ctx.send('That ain\'t no youtube url.')
+#     if not playlist:
+#         add_to_list(url)    
+
+#     for i in playlist:
+#         asyncio.create_task(ctx, playlist[i])
+        
 
 # ver 3 of player function
 # pro: play online without the need of downloads
 # cons: I still dont understand some lines of the code
-from youtube_dl import YoutubeDL
-
 @client.command(brief="Plays a single video, from a youtube URL")
 async def play(ctx, url):
     '''
@@ -71,6 +36,7 @@ async def play(ctx, url):
 
     '''
     channel = ctx.message.author.voice.channel
+    print('este es el canal', channel)
     
     # the bot wil try to connect to the same channel voice as the user who
     # invoked the function
@@ -93,6 +59,7 @@ async def play(ctx, url):
     
     # another dict, this one controls the ffmpeg converter (check ffmpeg doc for info)
     ffmpeg_opts = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     
     # this will take the true url we are going to need to play the audio online
@@ -116,8 +83,7 @@ async def play(ctx, url):
 
 @client.command()
 async def add_to_list(ctx, url, playlist = playlist):
-    if playlist:
-        asyncio.create_task(true_play(ctx, url))
+    asyncio.create_task(true_play(ctx, url))
 
 @client.command()
 async def true_play(ctx, url):
