@@ -122,5 +122,6 @@ async def resume(ctx):
 async def stop(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     voice.stop()
-
+# Replace the "dffjgalkdgjoairgaofglj" with your own discord bot token. This token here is only shown as
+# example, don't try tu use it because it's outdated (checkmate! hackers).
 client.run('ODk0MDkxMzE2OTE1NDg2NzQw.YVk9bQ.at1_mjaKiAZdOq0tBCNfuVzVc4k')
